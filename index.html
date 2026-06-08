@@ -144,7 +144,7 @@
 <button class="fab-admin" id="fab-admin" onclick="goTo('screen-admin-login')" title="Panel administrativo">🔐</button>
 
 <!-- HOME -->
-<div class="screen" id="screen-home">
+<div class="screen active" id="screen-home">
   <nav class="nav">
     <div class="nav-brand"><div class="nav-logo">EI</div><div><div class="nav-title">Expoingenierías</div><div class="nav-subtitle">Sistema de evaluación</div></div></div>
     <div class="nav-badge">2026</div>
@@ -161,7 +161,7 @@
 </div>
 
 <!-- IDENTIFY TEAM -->
-<div class="screen active" id="screen-scan">
+<div class="screen" id="screen-scan">
   <nav class="nav">
     <div class="nav-brand"><div class="nav-logo">EI</div><div><div class="nav-title">Expoingenierías</div><div class="nav-subtitle">Sistema de evaluación</div></div></div>
     <div class="nav-badge">2026</div>
@@ -204,12 +204,6 @@
       </div>
     </div>
     <button class="btn btn-primary btn-full" onclick="captureTeamID()" style="margin-top:16px;">Continuar →</button>
-    <div style="margin-top:32px;">
-      <div style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">📋 Listado de proyectos registrados</div>
-      <div class="card" style="padding:0;overflow:hidden;">
-        <table class="project-list-table"><thead><tr><th>ID</th><th>Nombre del proyecto</th><th>Categoría</th></tr></thead><tbody id="project-list-body"></tbody></table>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -268,7 +262,7 @@
       <div id="breakdown-list"></div>
     </div>
     <button class="btn btn-success btn-full" onclick="goTo('screen-scan')" style="margin-top:8px;">Evaluar otro equipo →</button>
-    <button class="btn btn-secondary btn-full" onclick="goTo('screen-home')" style="margin-top:8px;">Volver al inicio</button>
+    <button class="btn btn-secondary btn-full" onclick="goTo('screen-scan')" style="margin-top:8px;">Volver al inicio</button>
   </div>
 </div>
 
@@ -501,18 +495,18 @@ let _memoryStore = null; // fallback en memoria
 async function saveData(data) {
   _memoryStore = data;
   try {
-    await window.storage.set(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch(e) {
-    console.warn('Storage no disponible, usando memoria', e);
+    console.warn('localStorage no disponible, usando memoria', e);
   }
 }
 
 async function loadData() {
   if (_memoryStore !== null) return _memoryStore;
   try {
-    const result = await window.storage.get(STORAGE_KEY);
-    if (result && result.value) {
-      _memoryStore = JSON.parse(result.value);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      _memoryStore = JSON.parse(raw);
       return _memoryStore;
     }
   } catch(e) {
@@ -1016,7 +1010,7 @@ async function exportCSV() {
 async function clearData() {
   if (confirm('¿Eliminar todos los datos de evaluación? Esta acción no se puede deshacer.')) {
     _memoryStore = [];
-    try { await window.storage.delete(STORAGE_KEY); } catch(e) {}
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     renderAdmin();
     showToast('Datos eliminados.');
   }
@@ -1025,7 +1019,7 @@ async function clearData() {
 // ============================================================
 // INIT
 // ============================================================
-renderProjectList();
+goTo('screen-scan');
 </script>
 </body>
 </html>
